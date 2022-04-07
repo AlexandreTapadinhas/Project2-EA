@@ -25,7 +25,8 @@ g++ -std=c++17 -Wall -Wextra -O2 Project2.cpp -lm
 
 using namespace std;
 
-void find_pyramid_scheme(map < int, vector<int> > &scheme);
+void solve_pyramid_scheme(map < int, vector<int> > &scheme, vector<bool> &visited);
+void rec(map<int,vector<int>> &scheme, vector<bool> &visited, int no_ind);
 
 int main () {
 
@@ -34,7 +35,8 @@ int main () {
     //getline(cin, line);
 
     map< int, vector<int> > pyramid_scheme;
-    int recruiter, aux;
+    vector<bool> visited;
+    int recruiter, aux, num_nodes;
 
     while (getline(cin, line)) {
         istringstream line_ss(line);
@@ -48,21 +50,38 @@ int main () {
             pyramid_scheme[recruiter] = recruited;
         }
         else {
-            find_pyramid_scheme(pyramid_scheme);
+            num_nodes = pyramid_scheme.size();
+            visited.resize(num_nodes);
+            solve_pyramid_scheme(pyramid_scheme, visited);
             cout << endl;
             pyramid_scheme.clear();
         }
-
+        pyramid_scheme.clear();
     }
     return 0;
 }
 
-void find_pyramid_scheme(map < int, vector<int> > &scheme) {
-    for (auto &pair: scheme) {
+void solve_pyramid_scheme(map < int, vector<int> > &scheme, vector<bool> &visited) {
+    /*for (auto &pair: scheme) {
         cout << "{" << pair.first << ": ";
         for (auto &recruited: pair.second) {
             cout << recruited << " ";
         }
         cout << "}" << endl;
+    }*/
+
+    vector<int> sons = vector<int>(scheme[0].begin(), scheme[0].end()-1);
+    for (int son :sons) {
+        rec(scheme, visited, son);
+    }
+}
+
+void rec(map<int,vector<int>> &scheme, vector<bool> &visited, int no_ind) {
+    vector<int> sons = vector<int>(scheme[no_ind].begin(), scheme[no_ind].end()-1);
+    if (sons.size() == 0) {
+        cout << "leaf" << endl;
+    }
+    for (int son :sons) {
+        rec(scheme, visited, son);
     }
 }
