@@ -100,6 +100,7 @@ void rec(int no_ind, map<int,vector<int>> &scheme, vector<bool> &visited, map <i
     else {
         parents.push_back(no_ind);
         for (int son :sons) {
+            //cout << "son = " << son << endl;
             rec(son, scheme, visited, ratings, parents);
         }
     }
@@ -109,35 +110,75 @@ void rate_father_vs_all_children(int father_node, map<int,vector<int>> &scheme, 
     vector<int> sons = vector<int>(scheme[father_node].begin(), scheme[father_node].end()-1); // slice list to only have the children and not the cost of the node
     int father_price = vector<int>(scheme[father_node].end()-1, scheme[father_node].end())[0]; // price of the father node is on the end of the array of the children
     
-    /*cout << "num of sons = " << (int)sons.size() << endl; 
-    vector<vector<int>> aux;
-    aux.resize(2, vector<int>(2));
+
+    vector<int> melhor_soma_filhos{1, scheme[father_node].back()};
+    vector<int> soma_filhos_colocados{0, 0};
+
+
+
+
+
+    cout << "num of sons = " << (int)sons.size() << endl; 
+    //vector<vector<int>> aux{{1 + (int)sons.size(), father_price}, {(int)sons.size(), }};
+    //aux.resize(2, vector<int>(2));
     //vector<int> aux_line;
-    aux[0][0] = 1 + (int)sons.size();
+    /*aux[0][0] = 1 + (int)sons.size();
     aux[0][1] = father_price;
     aux[1][0] = (int)sons.size();
+    cout << "num of sons = " << (int)sons.size() << endl;*/
     //sum of the price of all the children
     int sum = 0;
     for (int son: sons) {
         sum += ratings[son][1][1];
     }
     cout << "sum of price of all children = " << sum << endl;
-    aux[1][1] = sum;
+    vector<vector<int>> aux{{1 + (int)sons.size(), father_price}, {(int)sons.size(), sum}};
+    //aux[1][1] = sum;
     
     cout << "aux[1][0] = " << aux[1][0] << "\taux[0][0] = " << aux[0][0] << endl;
-    if (aux[1][0] > aux[0][0]) {
+    /*if (aux[1][0] > aux[0][0]) {
         cout << "entrei\n\n\n" << endl;
         aux[0][0] = aux[1][0];
         aux[0][1] = aux[1][1];
-    }
-    ratings[father_node] = aux;*/
-    int num_sons = (int)sons.size();
-    int sum = 0;
+    }*/
+    //cout << "nao entrei" << endl;
+    //ratings[father_node] = aux;
+    //int num_sons = (int)sons.size();
+    /*int sum = 0;
     for (int son: sons) {
         sum += vector<int>(scheme[son].end()-1, scheme[son].end())[0]; // price of the father node is on the end of the array of the children
-    }
-    if () { // TODO: verificar se a melhor opçao é escolher todos os filhos ou só o pai
+    }*/
+    /*if (aux[0][0] > aux[1][0]) { // TODO: verificar se a melhor opçao é escolher todos os filhos ou só o pai
 
     }
+    else if (aux[0][0] < aux[1][0]) {
 
+    }
+    if (aux[0][1] > aux[1][1]) {
+
+    }*/
+    for (int son: sons) {
+
+        if (aux[0][0] > aux[1][0]) {
+            melhor_soma_filhos[0] += aux[1][0];
+            melhor_soma_filhos[1] += aux[1][1];
+        }
+        else if (aux[0][0] < aux[1][0]) {
+            melhor_soma_filhos[0] += aux[0][0];
+            melhor_soma_filhos[1] += aux[0][1];
+        }
+        else if (aux[0][1] < aux[1][1]) {
+            melhor_soma_filhos[0] += aux[0][0];
+            melhor_soma_filhos[1] += aux[1][1];
+        }
+        else {
+            melhor_soma_filhos[0] += aux[0][0];
+            melhor_soma_filhos[1] += aux[0][1];
+        }
+        soma_filhos_colocados[0] += aux[0][0];
+        soma_filhos_colocados[1] += aux[0][1];
+    }
+    ratings[father_node][0] = melhor_soma_filhos;
+    ratings[father_node][1] = soma_filhos_colocados;
+    
 }

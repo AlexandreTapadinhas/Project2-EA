@@ -1,0 +1,26 @@
+Uso dicionario como estrutura de dados -> people
+Outro dicionario de (int e vetor de vetores) -> somaNodes
+
+funcao de resolver(int key):
+
+//arr1 é quando o nó e usado arr2 quando nao e usado
+// {numNosUsados, Dinheiro}
+arr1 {1, money}
+arr2 {0, 0}
+atual {{0,0},{0,0}}
+
+for i < num_filhos
+	resolver(people[i])
+	atual = somaNodes[people[i]]
+	
+	depois é so fazer 4 ifs para achar a melhor combinacao de menos nós ou no caso se existir numero de nós igual vamos a que tiver mais guito
+	
+	temp[0][0] > temp[1][0]
+	temp[0][0] < temp[1][0]
+	temp[0][1] < temp[1][1]
+	else
+	
+	arr2 += atual  //basicamente arr2 é a soma de todos os filhos, pois caso o pai nao seja selecionado isto tem de ser
+	
+	somaNodes[key] = {arr1, arr2}
+	
