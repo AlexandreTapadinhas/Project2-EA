@@ -3,6 +3,7 @@ Rui Alexandre Tapadinhas - 2018283200
 David Marcelino Mendes Palaio - 2018283864
 
 Mooshak 
+sub 622 - 200 ptos
 */
 /*
 g++ -std=c++17 -Wall -Wextra -O2 Project2_1.cpp -lm
@@ -25,9 +26,7 @@ g++ -std=c++17 -Wall -Wextra -O2 Project2_1.cpp -lm
 
 using namespace std;
 
-void solve_pyramid_scheme(int father_node, map < int, vector<int> > &scheme, map< int, vector<vector<int>> > &ratings);
-void rec(int no_ind, map<int,vector<int>> &scheme, vector<bool> &visited, map <int, vector<vector<int>>> &ratings, vector<int> &leafs);
-void rate_father_vs_all_children(int father_node, map<int,vector<int>> &scheme, map <int, vector<vector<int>>> &ratings);
+void solve_pyramid_scheme(int node, map < int, vector<int> > &scheme, map< int, vector<vector<int>> > &ratings);
 
 int main () {
 
@@ -58,47 +57,48 @@ int main () {
         else {
             num_nodes = pyramid_scheme.size();
             visited.resize(num_nodes);
-            solve_pyramid_scheme(0, pyramid_scheme, ratings);
-            cout << ratings[0][1][0] << " " << ratings[0][1][1] << endl;
+            pyramid_scheme[-1] = {0, 0};
+            solve_pyramid_scheme(-1, pyramid_scheme, ratings);
+            cout << ratings[-1][0][0]-1 << " " << ratings[-1][0][1] << endl;
             pyramid_scheme.clear();
             ratings.clear();
-            //cout << "done" << endl;
         }
     }
     return 0;
 }
 
-void solve_pyramid_scheme(int father_node, map < int, vector<int> > &scheme, map< int, vector<vector<int>> > &ratings) {
-    vector<int> melhor_soma_filhos{1, scheme[father_node][(int)scheme[father_node].size()-1]};
-    vector<int> sons = vector<int>(scheme[father_node].begin(), scheme[father_node].end()-1); // slice list to only have the children and not the cost of the node
 
-    //vector<int> sum_price_sons{0, 0};
-    // rating using 
-    //vector<vector<int>> temp_rating_son{{0, 0}, {0, 0}};
-    ratings[father_node] = {{1, scheme[father_node][(int)scheme[father_node].size()-1]}, {0, 0}};
-
+void solve_pyramid_scheme(int node, map < int, vector<int> > &scheme, map< int, vector<vector<int>> > &ratings) {
+    vector<int> sons = scheme[node];
+    vector<int> rating_using_node{1, sons.back()};
+    vector<int> rating_using_sons{0, 0};
+    vector<vector<int>> temp{{0, 0}, {0, 0}};
+    sons.pop_back();
     for (int son: sons) {
         solve_pyramid_scheme(son, scheme, ratings);
-        //temp_rating_son = ratings[son];
-        if (ratings[son][0][0] > ratings[son][1][0]) {
-            ratings[father_node][0][0] += ratings[son][1][0];
-            ratings[father_node][0][1] += ratings[son][1][1];
+        temp = ratings[son];
+        if (temp[0][0] > temp[1][0])
+        {
+            rating_using_node[0] += temp[1][0];
+            rating_using_node[1] += temp[1][1];
         }
-        else if (ratings[son][0][1] < ratings[son][1][1]) {
-            ratings[father_node][0][0] += ratings[son][0][0];
-            ratings[father_node][0][1] += ratings[son][1][1];
+        else if (temp[0][0] < temp[1][0])
+        {
+            rating_using_node[0] += temp[0][0];
+            rating_using_node[1] += temp[0][1];
         }
-        else if (ratings[son][0][0] < ratings[son][1][0]) {
-            ratings[father_node][0][0] += ratings[son][0][0];
-            ratings[father_node][0][1] += ratings[son][0][1];
+        else if (temp[0][1] < temp[1][1])
+        {
+            rating_using_node[0] += temp[0][0];
+            rating_using_node[1] += temp[1][1];
         }
-        else { // if (ratings[son][0][1] > ratings[son][1][1])
-            ratings[father_node][0][0] += ratings[son][0][0];
-            ratings[father_node][0][1] += ratings[son][0][1];
+        else
+        {
+            rating_using_node[0] += temp[0][0];
+            rating_using_node[1] += temp[0][1];
         }
-        ratings[father_node][1][0] += ratings[son][0][0];
-        ratings[father_node][1][1] += ratings[son][0][1];
+        rating_using_sons[0] += temp[0][0];
+        rating_using_sons[1] += temp[0][1];
     }
-    //ratings[father_node] = {melhor_soma_filhos, sum_price_sons};
+    ratings[node] = {rating_using_node, rating_using_sons};
 }
-
